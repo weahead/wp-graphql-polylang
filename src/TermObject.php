@@ -2,7 +2,7 @@
 
 namespace WPGraphQL\Extensions\Polylang;
 
-use GraphQLRelay\Relay;
+use WPGraphQL\Extensions\Polylang\Model\Language;
 
 class TermObject
 {
@@ -123,36 +123,8 @@ class TermObject
                 $context,
                 $info
             ) {
-                $fields = $info->getFieldSelection();
-                $language = [];
-
-                if (Helpers::uses_slug_based_field($fields)) {
-                    $language['code'] = pll_get_term_language(
-                        $term->term_id,
-                        'slug'
-                    );
-                    $language['slug'] = $language['code'];
-                    $language['id'] = Relay::toGlobalId(
-                        'Language',
-                        $language['code']
-                    );
-                }
-
-                if (isset($fields['name'])) {
-                    $language['name'] = pll_get_term_language(
-                        $term->term_id,
-                        'name'
-                    );
-                }
-
-                if (isset($fields['locale'])) {
-                    $language['locale'] = pll_get_term_language(
-                        $term->term_id,
-                        'locale'
-                    );
-                }
-
-                return $language;
+                $slug = pll_get_term_language($term->term_id, 'slug');
+                return $slug ? new Language($slug) : null;
             },
         ]);
 
