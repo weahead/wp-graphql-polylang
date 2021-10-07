@@ -105,7 +105,9 @@ class PostPreviewQueryTest extends PolylangUnitTestCase
             post(id: \"$en_post_id\", idType: DATABASE_ID, asPreview: true) {
                 title
                 translations {
+                  ... on NodeWithTitle {
                     title
+                  }
                 }
             }
          }
