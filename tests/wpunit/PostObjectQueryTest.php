@@ -149,7 +149,9 @@ class PostObjectQueryTest extends PolylangUnitTestCase
             postBy(postId: $fi_post_id) {
                 title
                 translations {
-                  title
+                  ... on NodeWithTitle {
+                    title
+                  }
                 }
             }
          }
@@ -198,7 +200,9 @@ class PostObjectQueryTest extends PolylangUnitTestCase
             postBy(postId: $fi_post_id) {
                 title
                 translations {
-                  title
+                  ... on NodeWithTitle {
+                    title
+                  }
                   id
                 }
             }
@@ -244,7 +248,9 @@ class PostObjectQueryTest extends PolylangUnitTestCase
             postBy(postId: $fi_post_id) {
                 title
                 translation(language: EN) {
-                  title
+                  ... on NodeWithTitle {
+                    title
+                  }
                 }
             }
          }
