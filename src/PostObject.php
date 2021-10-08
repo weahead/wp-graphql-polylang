@@ -2,7 +2,7 @@
 
 namespace WPGraphQL\Extensions\Polylang;
 
-use GraphQLRelay\Relay;
+use WPGraphQL\Extensions\Polylang\Model\Language;
 
 class PostObject
 {
@@ -133,13 +133,6 @@ class PostObject
                     $context,
                     $info
                 ) {
-                    $fields = $info->getFieldSelection();
-                    $language = [
-                        'name' => null,
-                        'slug' => null,
-                        'code' => null,
-                    ];
-
                     $post_id = $post->ID;
 
                     // The language of the preview post is not set at all so we
@@ -149,30 +142,7 @@ class PostObject
                     }
 
                     $slug = pll_get_post_language($post_id, 'slug');
-
-                    if (!$slug) {
-                        return null;
-                    }
-
-                    $language['code'] = $slug;
-                    $language['slug'] = $slug;
-                    $language['id'] = Relay::toGlobalId('Language', $slug);
-
-                    if (isset($fields['name'])) {
-                        $language['name'] = pll_get_post_language(
-                            $post_id,
-                            'name'
-                        );
-                    }
-
-                    if (isset($fields['locale'])) {
-                        $language['locale'] = pll_get_post_language(
-                            $post_id,
-                            'locale'
-                        );
-                    }
-
-                    return $language;
+                    return $slug ? new Language($slug) : null;
                 },
             ]
         );
