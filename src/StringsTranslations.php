@@ -30,22 +30,22 @@ class StringsTranslations
 
             if (!empty($languages)) {
                 $mo = [];
-                foreach ( $languages as $language ) {
+                foreach ($languages as $language) {
                     $language = (object) $language;
-                    $mo[ $language->slug ] = new \PLL_MO();
-                    $mo[ $language->slug ]->import_from_db($language);
+                    $mo[$language->slug] = new \PLL_MO();
+                    $mo[$language->slug]->import_from_db($language);
                 }
 
                 $groups       = [];
                 $translations = [];
-                foreach ( $languages as $language ) {
+                foreach ($languages as $language) {
                     /** @var \PLL_Language $language */
                     $slug = $language->slug;
-                    foreach ( $this->strings as $id => $obj ) {
-                        $string = $mo[ $slug ]->translate($obj['string']);
+                    foreach ($this->strings as $id => $obj) {
+                        $string = $mo[$slug]->translate($obj['string']);
 
                         $groups[$obj['context']][$slug][$obj['string']] = $string;
-                        $translations[ $slug ][$obj['string']] = $string;
+                        $translations[$slug][$obj['string']] = $string;
                     }
                 }
 
@@ -76,7 +76,7 @@ class StringsTranslations
         if (isset($args['includes']) && !empty($args['includes'])) {
             foreach ($translations as $lang => $langTranslations) {
                 foreach ($langTranslations as $key => $s) {
-                    if (false !== stripos($key, $args['includes']) ) {
+                    if (false !== stripos($key, $args['includes'])) {
                         if (isset($args['group']) && !empty($args['group'])) {
                             $group = $args['group'];
                             $return_content->$group->$lang->$key = $s;
@@ -98,12 +98,16 @@ class StringsTranslations
 
         $groupNames = [];
         foreach ($this->groupNames as $groupName) {
+            if (!preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $groupName)) {
+                $groupName = str_replace('-', '_', $groupName);
+            }
             $key = strtoupper($groupName);
             $groupNames[$key] = $groupName;
         }
 
         register_graphql_enum_type(
-            'TranslationGroupEnum', [
+            'TranslationGroupEnum',
+            [
                 'description' => __(
                     'Enum of all available groups',
                     'wp-graphql-polylang'
@@ -113,7 +117,8 @@ class StringsTranslations
         );
 
         register_graphql_scalar(
-            'JSON', [
+            'JSON',
+            [
                 'description'  => __(
                     'Scalar for content returns where defining a type is impossible',
                     'wp-graphql-polylang'
@@ -131,7 +136,8 @@ class StringsTranslations
         );
 
         register_graphql_fields(
-            'RootQuery', [
+            'RootQuery',
+            [
                 'translateString' => [
                     'type' => 'String',
                     'description' => __(
