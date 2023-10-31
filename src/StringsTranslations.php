@@ -98,10 +98,10 @@ class StringsTranslations
 
         $groupNames = [];
         foreach ($this->groupNames as $groupName) {
-            if (!preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $groupName)) {
-                $groupName = str_replace('-', '_', $groupName);
-            }
             $key = strtoupper($groupName);
+            if (!preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $key)) {
+                $key = preg_replace('/[^a-zA-Z0-9]/s', '', $key);
+            }
             $groupNames[$key] = $groupName;
         }
 
