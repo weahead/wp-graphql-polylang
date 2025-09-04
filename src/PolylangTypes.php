@@ -22,6 +22,7 @@ class PolylangTypes
         foreach (pll_languages_list() as $slug) {
             $language = new Language($slug);
             $language_codes[$language->code] = [
+                'name' => $language->code,
                 'value' => $language->slug,
             ];
         }
@@ -29,6 +30,7 @@ class PolylangTypes
         if (empty($language_codes)) {
             $locale = get_locale();
             $language_codes[strtoupper($locale)] = [
+                'name' => strtoupper($locale),
                 'value' => $locale,
                 'description' => __(
                     'The default locale of the site',
@@ -37,13 +39,16 @@ class PolylangTypes
             ];
         }
 
-        register_graphql_enum_type('LanguageCodeEnum', [
-            'description' => __(
-                'Enum of all available language codes',
-                'wp-graphql-polylang'
-            ),
-            'values' => $language_codes,
-        ]);
+        \register_graphql_enum_type(
+            'LanguageCodeEnum',
+            [
+                'description' => __(
+                    'Enum of all available language codes',
+                    'wp-graphql-polylang'
+                ),
+                'values' => $language_codes,
+            ]
+        );
 
         register_graphql_enum_type('LanguageCodeFilterEnum', [
             'description' => __(
@@ -51,8 +56,14 @@ class PolylangTypes
                 'wp-graphql-polylang'
             ),
             'values' => array_merge($language_codes, [
-                'DEFAULT' => 'default',
-                'ALL' => 'all',
+                'DEFAULT' => [
+                    'name' => 'DEFAULT',
+                    'value' => 'default',
+                ],
+                'ALL' => [
+                    'name' => 'ALL',
+                    'value' => 'all',
+                ],
             ]),
         ]);
 
@@ -132,24 +143,24 @@ class PolylangTypes
         register_graphql_interface_type('NodeWithTranslations', [
             'description' => __('Interface for Nodes with translations', 'wp-graphql-polylang'),
             'interfaces' => ['ContentNode'],
-            'resolveType' => function ( \WPGraphQL\Model\Post $post ) use ( $type_registry ) {
+            'resolveType' => function (\WPGraphQL\Model\Post $post) use ($type_registry) {
                 $type      = null;
-                $post_type = isset( $post->post_type ) ? $post->post_type : null;
+                $post_type = isset($post->post_type) ? $post->post_type : null;
 
-                if ( isset( $post->post_type ) && 'revision' === $post->post_type ) {
-                    $parent = get_post( $post->parentDatabaseId );
-                    if ( ! empty( $parent ) && isset( $parent->post_type ) ) {
+                if (isset($post->post_type) && 'revision' === $post->post_type) {
+                    $parent = get_post($post->parentDatabaseId);
+                    if (! empty($parent) && isset($parent->post_type)) {
                         $post_type = $parent->post_type;
                     }
                 }
 
-                $post_type_object = ! empty( $post_type ) ? get_post_type_object( $post_type ) : null;
+                $post_type_object = ! empty($post_type) ? get_post_type_object($post_type) : null;
 
-                if ( isset( $post_type_object->graphql_single_name ) ) {
-                    $type = $type_registry->get_type( $post_type_object->graphql_single_name );
+                if (isset($post_type_object->graphql_single_name)) {
+                    $type = $type_registry->get_type($post_type_object->graphql_single_name);
                 }
 
-                return ! empty( $type ) ? $type : null;
+                return ! empty($type) ? $type : null;
             },
             'fields'      => [
                 'language' => [
@@ -264,7 +275,7 @@ class PolylangTypes
         register_graphql_interface_type('TermNodeWithTranslations', [
             'description' => __('Interface for TermNodes with translations', 'wp-graphql-polylang'),
             'interfaces' => ['TermNode'],
-            'resolveType' => function ( $term ) use ( $type_registry ) {
+            'resolveType' => function ($term) use ($type_registry) {
 
                 /**
                  * The resolveType callback is used at runtime to determine what Type an object
@@ -276,15 +287,14 @@ class PolylangTypes
                  */
                 $type = null;
 
-                if ( isset( $term->taxonomyName ) ) {
-                    $tax_object = get_taxonomy( $term->taxonomyName );
-                    if ( isset( $tax_object->graphql_single_name ) ) {
-                        $type = $type_registry->get_type( $tax_object->graphql_single_name );
+                if (isset($term->taxonomyName)) {
+                    $tax_object = get_taxonomy($term->taxonomyName);
+                    if (isset($tax_object->graphql_single_name)) {
+                        $type = $type_registry->get_type($tax_object->graphql_single_name);
                     }
                 }
 
-                return ! empty( $type ) ? $type : null;
-
+                return ! empty($type) ? $type : null;
             },
             'fields'      => [
                 'language' => [

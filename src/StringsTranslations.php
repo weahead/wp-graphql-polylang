@@ -102,7 +102,10 @@ class StringsTranslations
             if (!preg_match('/^[_a-zA-Z][_a-zA-Z0-9]*$/', $key)) {
                 $key = preg_replace('/[^a-zA-Z0-9]/s', '', $key);
             }
-            $groupNames[$key] = $groupName;
+            $groupNames[$key] = [
+                'name' => $key,
+                'value' => $groupName,
+            ];
         }
 
         register_graphql_enum_type(
