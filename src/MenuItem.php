@@ -16,7 +16,7 @@ class MenuItem
         string $location,
         string $language
     ): string {
-        return "${location}___${language}";
+        return "{$location}___{$language}";
     }
 
     function init()
@@ -46,7 +46,7 @@ class MenuItem
             return $query_args;
         }
 
-        $args = $resolver->getArgs();
+        $args = $resolver->get_args();
 
         if (!isset($args['where']['language'])) {
             return $query_args;
